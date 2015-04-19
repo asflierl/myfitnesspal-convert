@@ -1,0 +1,7 @@
+syntax: regexp
+
+^target$
+^project/target$
+^project/project
+^user\.sbt$
+^(.+/)?\.idea$
