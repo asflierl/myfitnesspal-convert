@@ -3,8 +3,12 @@ package eu.flierl
 import java.nio.file.Path
 import java.time.LocalDate
 
-import argonaut._, Argonaut._, Parse.decodeEither
-import scalaz._, Scalaz._
+import cats.implicits._
+import io.circe.generic.auto._
+import io.circe.parser._
+
+import scala.util.Try
+import scala.{Either => \/}
 
 object MyFitnessPalConvert extends App {
   args match {
@@ -18,7 +22,7 @@ object MyFitnessPalConvert extends App {
     val json = inputPath.slurped
 
     for {
-      dataPoints <- decodeEither[Report](json).leftMap("parse error: " +).map(_ data)
+      dataPoints <- decode[Report](json).leftMap("parse error: " +).map(_ data)
       relevant    = dataPoints dropWhile (_.total == 0d)
       plausible   = reconstructDate(relevant)
       formatted   = reformat(plausible)
@@ -37,15 +41,13 @@ object MyFitnessPalConvert extends App {
 
   def reformat(dataPoints: List[DataPoint]) = dataPoints.map(p => s""""${p.date}";"${f"${p.total}%.1f"}"""")
 
-  def write(theFancyData: List[String], destination: Path): String \/ Path = \/.fromTryCatchNonFatal {
+  def write(theFancyData: List[String], destination: Path): String \/ Path = Try {
     if (destination.exists && destination.isAFile) destination.delete
     destination willNowContain theFancyData
-  } leftMap (_ getMessage)
+  }.toEither leftMap (_ getMessage)
 
   lazy val dateAs = "(\\d+)/(\\d+)".r
   lazy val currentYear = LocalDate.now.getYear
-  implicit lazy val ReportCodec: CodecJson[Report] = casecodec1(Report, Report unapply)("data")
-  implicit lazy val DataPointCodec: CodecJson[DataPoint] = casecodec2(DataPoint, DataPoint unapply)("date", "total")
 }
 
 case class Report(data: List[DataPoint])

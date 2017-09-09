@@ -2,9 +2,13 @@ organization := "eu.flierl"
 name := "myfitnesspal-convert"
 version := "1.0"
 
-scalaVersion := "2.11.6"
-scalacOptions := Seq("-unchecked", "-language:_", "-encoding", "UTF-8", "-target:jvm-1.8")
+scalaVersion := "2.12.3"
+scalacOptions := Seq("-unchecked", "-language:_", "-deprecation", "-opt:l:inline", "-opt-inline-from:**", "-opt-warnings:_", "-encoding", "UTF-8", "-target:jvm-1.8")
 
-libraryDependencies += "io.argonaut" %% "argonaut" % "6.1-M6"
+libraryDependencies ++= Seq(
+  "io.circe" %% "circe-core",
+  "io.circe" %% "circe-generic",
+  "io.circe" %% "circe-parser"
+).map(_ % "0.8.0")
 
 fork := true
