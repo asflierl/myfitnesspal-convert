@@ -8,7 +8,7 @@ import io.circe.generic.auto._
 import io.circe.parser._
 
 import scala.util.Try
-import scala.{Either => \/}
+import scala.{Either => Or}
 
 object MyFitnessPalConvert extends App {
   args match {
@@ -18,7 +18,7 @@ object MyFitnessPalConvert extends App {
     case _          => println("Please provide the path to a JSON file as the first and only argument.")
   }
 
-  def convert(inputPath: Path): String \/ Path = {
+  def convert(inputPath: Path): String Or Path = {
     val json = inputPath.slurped
 
     for {
@@ -41,7 +41,7 @@ object MyFitnessPalConvert extends App {
 
   def reformat(dataPoints: List[DataPoint]) = dataPoints.map(p => s""""${p.date}";"${f"${p.total}%.1f"}"""")
 
-  def write(theFancyData: List[String], destination: Path): String \/ Path = Try {
+  def write(theFancyData: List[String], destination: Path): String Or Path = Try {
     if (destination.exists && destination.isAFile) destination.delete
     destination willNowContain theFancyData
   }.toEither leftMap (_ getMessage)

@@ -2,7 +2,7 @@ package eu
 
 import java.nio.charset.StandardCharsets.UTF_8
 import java.nio.file.{Path, Paths, Files}
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 package object flierl {
   implicit class Ⓢⓣⓡⓘⓝⓖ(val wrapped: String) extends AnyVal {
